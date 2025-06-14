@@ -12,7 +12,30 @@ exports.createTodo = async (req, res) => {
             });
         }
 
-        const todoCreated = await Todo.create({ income, kharcha, date });
+        const entryDate = new Date(date);
+        const startOfDay = new Date(entryDate.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(entryDate.setHours(23, 59, 59, 999));
+
+        const existing = await Todo.findOne({
+            user: req.user._id,
+            date: { $gte: startOfDay, $lte: endOfDay },
+        });
+
+        if (existing) {
+            return res.status(400).json({
+                success: false,
+                msg: "An entry for this date already exists. You can edit it.",
+                data: existing,
+            });
+        }
+
+        const todoCreated = await Todo.create({
+            user: req.user._id,
+            income,
+            kharcha,
+            date,
+            profit: income - kharcha,
+        });
 
         return res.status(200).json({
             success: true,
@@ -26,6 +49,7 @@ exports.createTodo = async (req, res) => {
         });
     }
 };
+
 
 // Update Todo
 exports.updateTodo = async (req, res) => {
