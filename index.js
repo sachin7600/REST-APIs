@@ -7,7 +7,15 @@ const dbConnect = require('./config/db');
 const userRoute = require('./routes/userRoute');
 const todoRoute = require('./routes/todoRoute');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 app.use(cookieParser());
+const corsOptions = {
+    origin: 'https://rest-apis-usj7.onrender.com',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+};
+
+app.use(cors(corsOptions));
 dbConnect();
 
 app.use('/api/v1/user', userRoute);
