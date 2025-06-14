@@ -12,6 +12,12 @@ dbConnect();
 
 app.use('/api/v1/user', userRoute);
 app.use('/api/v1/todo', todoRoute);
+app.use('/', (req, res) => {
+    res.status(200).json({
+        success: true,
+        msg: "Welcome to Ghar Kharch"
+    })
+})
 
 app.listen(port, () => {
     console.log("Listining on port no. ", port);
