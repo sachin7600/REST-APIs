@@ -2,9 +2,9 @@ const Todo = require("../models/todo");
 
 exports.createTodo = async (req, res) => {
     try {
-        const { title, description } = req.body;
+        const { title, description, income, kharcha, date, profit } = req.body;
 
-        if (!title || !description) {
+        if (!income || !kharcha || !date) {
             return res.status(400).json({
                 success: false,
                 msg: "All fields are required"
@@ -12,14 +12,13 @@ exports.createTodo = async (req, res) => {
         }
 
         const todoCreated = await Todo.create({
-            title,
-            description
+            income, kharcha, date
         })
         todoCreated.save();
 
         return res.status(200).json({
             success: true,
-            msg: "Todo created successfully",
+            msg: "Data saved successfully",
             data: todoCreated
         })
 
@@ -34,14 +33,7 @@ exports.createTodo = async (req, res) => {
 exports.updateTodo = async (req, res) => {
     try {
         const { todoId } = req.params;
-        const { title, description } = req.body;
-
-        // if (!title || !description || !todoId) {
-        //     return res.status(400).json({
-        //         success: false,
-        //         msg: "All fields are required"
-        //     })
-        // }
+        const { title, description, date, profit, kharcha, income } = req.body;
 
         const todoUpdated = await Todo.findByIdAndUpdate(todoId, {
             title,
@@ -74,6 +66,25 @@ exports.getAllTodo = async (req, res) => {
             success: true,
             msg: "All todo retrived successfully",
             data: showAllTodo
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: error.message
+        })
+    }
+}
+
+exports.getTodoById = async (req, res) => {
+    try {
+        const { todoId } = req.body;
+        const showTodoById = await Todo.find(todoId);
+
+        return res.status(200).json({
+            success: true,
+            msg: "Todo retrived successfully",
+            data: showTodoById
         })
 
     } catch (error) {

@@ -3,11 +3,9 @@ const mongoose = require('mongoose');
 const todoSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true,
     },
     description: {
         type: String,
-        required: true,
     },
     total: {
         type: String,
@@ -24,6 +22,9 @@ const todoSchema = new mongoose.Schema({
     loss: {
         type: String,
     },
+    date: {
+        type: String,
+    }
 });
 
 module.exports = mongoose.model("Todo", todoSchema);
