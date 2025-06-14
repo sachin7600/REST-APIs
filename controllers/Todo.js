@@ -122,7 +122,7 @@ exports.getTodoById = async (req, res) => {
 // Delete Todo
 exports.deleteTodo = async (req, res) => {
     try {
-        const { todoId } = req.body;
+        const { todoId } = req.query;
 
         if (!todoId) {
             return res.status(400).json({
