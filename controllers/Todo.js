@@ -2,54 +2,49 @@ const Todo = require("../models/todo");
 
 // Create Todo
 exports.createTodo = async (req, res) => {
-    try {
-        const { income, kharcha, date } = req.body;
+  try {
+    const { income, kharcha, date } = req.body;
 
-        if (!income || !kharcha || !date) {
-            return res.status(400).json({
-                success: false,
-                msg: "Income, kharcha, and date are required",
-            });
-        }
-
-        const entryDate = new Date(date);
-        const startOfDay = new Date(entryDate.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(entryDate.setHours(23, 59, 59, 999));
-
-        const existing = await Todo.findOne({
-            user: req.user._id,
-            date: { $gte: startOfDay, $lte: endOfDay },
-        });
-
-        if (existing) {
-            return res.status(400).json({
-                success: false,
-                msg: "An entry for this date already exists. You can edit it.",
-                data: existing,
-            });
-        }
-
-        const todoCreated = await Todo.create({
-            user: req.user._id,
-            income,
-            kharcha,
-            date,
-            profit: income - kharcha,
-        });
-
-        return res.status(200).json({
-            success: true,
-            msg: "Data saved successfully",
-            data: todoCreated,
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            msg: error.message,
-        });
+    if (!income || !kharcha || !date) {
+      return res.status(400).json({
+        success: false,
+        msg: "Income, kharcha, and date are required",
+      });
     }
-};
 
+    // Normalize incoming date (remove time)
+    const normalizedDate = new Date(date);
+    normalizedDate.setHours(0, 0, 0, 0);
+
+    // Check if a todo already exists for that exact date
+    const existing = await Todo.findOne({ date: normalizedDate });
+
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        msg: "An entry for this date already exists. Please edit it instead.",
+      });
+    }
+
+    // Save with normalized date
+    const todoCreated = await Todo.create({
+      income,
+      kharcha,
+      date: normalizedDate,
+    });
+
+    return res.status(200).json({
+      success: true,
+      msg: "Data saved successfully",
+      data: todoCreated,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      msg: error.message,
+    });
+  }
+};
 
 // Update Todo
 exports.updateTodo = async (req, res) => {
